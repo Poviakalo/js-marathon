@@ -6,57 +6,68 @@ const character = {
     defaultHP: 100,
     demageHP: 100,
     elHP: document.getElementById('health-character'),
-    elProgressbar: document.getElementById('progressbar-character')
+    elProgressbar: document.getElementById('progressbar-character'),
+    renderHpLife: renderHpLife,
+    renderProgressbarHP: renderProgressbarHP,
+    changeHP: changeHP,
+    renderHP: renderHP
 }
 const enemy = {
     name: 'Charmander',
     defaultHP: 100,
     demageHP: 100,
     elHP: document.getElementById('health-enemy'),
-    elProgressbar: document.getElementById('progressbar-enemy')
+    elProgressbar: document.getElementById('progressbar-enemy'),
+    renderHpLife: renderHpLife,
+    renderProgressbarHP: renderProgressbarHP,
+    changeHP: changeHP,
+    renderHP: renderHP    
 }
 
+//Evens
 
 $btn.addEventListener('click', function() {    
-    changeHP(random(20), character);
-    changeHP(random(20), enemy);
+    character.changeHP(random(20));
+    enemy.changeHP(random(20));
 });
 $btnDoubleCick.addEventListener('click', function() {    
-    changeHP(random(40), character);
-    changeHP(random(40), enemy);
+    character.changeHP(random(40));
+    enemy.changeHP(random(40));
 });
 
 // functions
 
 function init() {
     console.log('Start Game!');   
-    renderHP(character);
-    renderHP(enemy);
+    character.renderHP();
+    enemy.renderHP();
 }
-function renderHP (person) {
-    renderHpLife(person);
-    renderProgressbarHP(person);
+function renderHP () {
+    this.renderHpLife();
+    this.renderProgressbarHP();
 }
-function renderHpLife (person) {         
-    person.elHP.innerText = person.demageHP + '/' + person.defaultHP;    
+function renderHpLife () {         
+    this.elHP.innerText = this.demageHP + '/' + this.defaultHP;    
 }
-function renderProgressbarHP (person) {
-    person.elProgressbar.style.width = person.demageHP + '%';
+function renderProgressbarHP () {
+    this.elProgressbar.style.width = this.demageHP + '%';
 
 }
-function changeHP(count, person) {
-    if (person.demageHP < count) {
-        person.demageHP = 0;
-        alert('Бедний ' + person.name + ' проиграл бой!');
+function changeHP(count) {
+    if (this.demageHP < count) {
+        this.demageHP = 0;
+        alert('Бедний ' + this.name + ' проиграл бой!');
         $btn.disabled = true;
         $btnDoubleCick.disabled = true;
     } else {
-        person.demageHP -= count;
+        this.demageHP -= count;
     }    
-    renderHP(person);
+    this.renderHP();
 }
 function random (num) {    
     return Math.ceil(Math.random()*num);
 }
 
 init();
+
+
