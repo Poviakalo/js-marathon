@@ -38,6 +38,7 @@ body {
     width: 320px;
     height: 260px;
     position: relative;
+    z-index: 2;
     margin: 20px;
     display: flex;
     flex-direction: column;
@@ -473,4 +474,12 @@ h1 {
 
 .action label {
     padding: 6px 0;
+}
+.logs {
+    width: 75%;
+    padding: 20px;    
+    /* background-color: rgba(0, 0, 0, 0.1); */
+    position: fixed;
+    z-index: 1;
+    top: 66%;
 }
