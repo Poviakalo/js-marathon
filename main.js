@@ -6,19 +6,20 @@ const $btnDoubleCick = $getElById('btn-double-kick');
 
 const character = {
     name: 'Pikachu',
-    defaultHP: 150,
-    demageHP: 150,
+    defaultHP: 100,
+    demageHP: 100,
     elHP: $getElById('health-character'),
     elProgressbar: $getElById('progressbar-character'),
     renderHpLife: renderHpLife,
     renderProgressbarHP: renderProgressbarHP,
     changeHP: changeHP,
-    renderHP: renderHP
+    renderHP: renderHP    
 }
+
 const enemy = {
     name: 'Charmander',
-    defaultHP: 150,
-    demageHP: 150,
+    defaultHP: 100,
+    demageHP: 100,
     elHP: $getElById('health-enemy'),
     elProgressbar: $getElById('progressbar-enemy'),
     renderHpLife: renderHpLife,
@@ -37,14 +38,34 @@ const enemy = {
 $btn.addEventListener('click', function() {    
     character.changeHP(random(20));
     enemy.changeHP(random(20));
-
+    count(1);
 });
 $btnDoubleCick.addEventListener('click', function() {    
     character.changeHP(random(40));
     enemy.changeHP(random(40));
+    countDouble(1);
 });
 
 // functions
+function clickBtn (click, kick) {    
+    const amount = kick;
+    return function (i = 0 ){
+        if( click < amount - 1 && kick > 0) {
+            click += i;
+            kick -= i;
+            console.log(`Это был ${click} удар`);
+            console.log(`Осталось ${kick} попыток`);
+        } else {
+            alert(`Игра окончена! Это был последний ${click + 1} удар!`);
+            console.log(`Это был последний ${click + 1} удар!`)
+            $btn.disabled = true;
+            $btnDoubleCick.disabled = true;
+        }    
+    
+    }
+}
+const count = clickBtn(0, Math.ceil(character.defaultHP/20) + 1);
+const countDouble = clickBtn(0, Math.ceil(character.defaultHP/40) + 1);
 
 function init() {
     console.log('Start Game!');   
@@ -66,7 +87,6 @@ function changeHP(count) {
     
     const log = this === enemy ? generateLog(this, character, count) : generateLog(this, enemy, count);
 
-
     this.demageHP -= count;
     if (this.demageHP <= 0 ) {
         this.demageHP = 0;
@@ -74,24 +94,20 @@ function changeHP(count) {
         $btn.disabled = true;
         $btnDoubleCick.disabled = true;
     }
-    
-    //Add DOM           /////////////////////////////////////////////////////////
 
+    createText(log);
+    this.renderHP();
+}
+function createText (log) {
     const $p = document.createElement('p');
     $p.innerText = log;
     const $logs = document.querySelector('#logs');
     $logs.insertBefore($p, $logs.children[0]);
-    console.log(log);
-
-    /* --------------------------------------------------------------------------- */
-
-    this.renderHP();
+    // console.log(log);
 }
 function random (num) {    
     return Math.ceil(Math.random()*num);
 }
- 
-
 function generateLog(firstPerson, secondPerson, count) {
 
     function diff () { 
