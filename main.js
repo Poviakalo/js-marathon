@@ -1,94 +1,79 @@
-import Pokemon from './pokemon.js'
-import random from './utils.js';
-const player1 = new Pokemon ({
-    name: 'Pikachu',
-    type: 'electric',
-    hp: 500,
-    selectors: 'character',
-});
-const player2 = new Pokemon ({
-    name: 'Charmander',
-    type: 'fire',
-    hp: 450,
-    selectors: 'enemy',
-});
+import Pokemon from './pokemon.js';
+import { random, clickBtn, createText, generateLog, $getElById } from './utils.js';
+import { pokemons } from './pokemons.js';
+alert('Start Game');
 
+
+const pikachu = pokemons.find(item => item.name === 'Pikachu');
+const charmander = pokemons.find(item => item.name === 'Charmander');
+const bulbasaur = pokemons.find(item => item.name === 'Bulbasaur');
+const squirtle = pokemons.find(item => item.name === 'Squirtle');
+const pidgey = pokemons.find(item => item.name === 'Pidgey');
+const mew = pokemons.find(item => item.name === 'Mew');
+
+
+const player1 = new Pokemon ({   
+    ...pikachu, 
+    selectors: 'player1',
+});
 console.log(player1);
-console.log(player2);
 
-function $getElById(id) {
-    return document.getElementById(id);
-}
-const $btn = $getElById('btn-kick');
-const $btnDoubleCick = $getElById('btn-double-kick');
-
-
-//Evens
-
-$btn.addEventListener('click', function() {    
-     player1.changeHP(random(30,5), function(count){         
-        createText (generateLog(player1, player2, count));
-     });
-     player2.changeHP(random(30,5), function(count){        
-        createText (generateLog(player2, player1, count));
-    });
-    count();
+const player2 = new Pokemon ({
+    ...bulbasaur,
+    selectors: 'player2',
 });
-$btnDoubleCick.addEventListener('click', function() {    
-    player1.changeHP(random(50,20),function(count){        
-        createText (generateLog(player1, player2, count));
+const control = document.querySelector('.control');
+
+player1.attacks.forEach(item => {
+    console.log(item);
+    const $btn = document.createElement('button');
+    $btn.classList.add('button');
+    $btn.innerText = item.name;
+    const countBtn = clickBtn(item.maxCount, $btn);
+
+    $btn.addEventListener('click', () => {
+
+        
+        console.log('click btn', $btn.innerText);        
+        
+        player1.changeHP(random(item.maxDamage,item.minDamage), function(count){         
+            createText (generateLog(player1, player2, count));
+        });       
+        player2.changeHP(random(item.maxDamage,item.minDamage), function(count){         
+            createText (generateLog(player1, player2, count));
+        });
+        // createText (generateLog(player1, player2, count));
+        if ( player1.hp.current === 0 || player2.hp.current === 0) {
+            const gameOver = document.createElement('div');
+            const gameOverText = document.createElement('p');
+            gameOverText.innerText = `Game Over!`;
+            gameOver.classList.add('gameOver');
+            control.appendChild(gameOver);
+            gameOver.appendChild(gameOverText);     
+                   
+        }
+        countBtn();  
+              
     });
-    player2.changeHP(random(40,20),function(count){        
-        createText (generateLog(player2, player1, count));
-    });
-    countDouble();
+    control.appendChild($btn);    
 });
 
-// functions
-const count = clickBtn(Math.ceil(player1.hp.total/20) + 1, $btn);
-const countDouble = clickBtn(Math.ceil(player1.hp.total/40) + 1, $btnDoubleCick);
+const pokemon1 = pokemons.splice(random(pokemons.length-1, -1), 1)[0];
+const pokemonName1 = $getElById('name-player1');
+pokemonName1.innerText = pokemon1.name;
 
-function clickBtn (kick = 6, el) {  
-    const innerText = el.innerText;
-    el.innerText = `${innerText} (${kick})`;
+const pokemonImg1 = document.querySelector('.player1');
+pokemonImg1.querySelector('img.sprite').src = pokemon1.img;
 
-    return function (){
-        kick--;
-        if( kick === 0) {
-            el.disabled = true;
-        } 
-        el.innerText = `${innerText} (${kick})`;
-        return kick;       
-    }
-}
-function createText (log) {
-    const $p = document.createElement('p');
-    $p.innerText = log;
-    const $logs = document.querySelector('#logs');
-    $logs.insertBefore($p, $logs.children[0]);
-    // console.log(log);
-}
 
-function generateLog(player1, player2, count) {
-    const { name, hp:{current,total} } = player1;
-    const { name: enemyName } = player2;
+const pokemon2 = pokemons.splice(random(pokemons.length-1, -1), 1)[0];
+const pokemonName2 = $getElById('name-player2');
+pokemonName2.innerText = pokemon2.name;
 
-    
-    const logs = [
-        `${name} вспомнил что-то важное, но неожиданно ${enemyName}, не помня себя от испуга, ударил в предплечье врага. - ${count}, [ ${current} / ${total}]`,
-        `${name} поперхнулся, и за это ${enemyName} с испугу приложил прямой удар коленом в лоб врага. - ${count}, [ ${current} / ${total}]`,
-        `${name} забылся, но в это время наглый ${enemyName}, приняв волевое решение, неслышно подойдя сзади, ударил. - ${count}, [ ${current} / ${total}]`,
-        `${name} пришел в себя, но неожиданно ${enemyName} случайно нанес мощнейший удар. - ${count}, [ ${current} / ${total}]`,
-        `${name} поперхнулся, но в это время ${enemyName} нехотя раздробил кулаком \<вырезанно цензурой\> противника. - ${count}, [ ${current} / ${total}]`,
-        `${name} удивился, а ${enemyName} пошатнувшись влепил подлый удар. - ${count}, [ ${current} / ${total}]`,
-        `${name} высморкался, но неожиданно ${enemyName} провел дробящий удар. - ${count}, [ ${current} / ${total}]`,
-        `${name} пошатнулся, и внезапно наглый ${enemyName} беспричинно ударил в ногу противника. - ${count}, [ ${current} / ${total}]`,
-        `${name} расстроился, как вдруг, неожиданно ${enemyName} случайно влепил стопой в живот соперника. - ${count}, [ ${current} / ${total}]`,
-        `${name} пытался что-то сказать, но вдруг, неожиданно ${enemyName} со скуки, разбил бровь сопернику. - ${count}, [ ${current} / ${total}]`
-    ];
+const pokemonImg2 = document.querySelector('.player2');
+pokemonImg2.querySelector('img.sprite').src = pokemon2.img;
 
-    
-    return logs[random(logs.length) - 1];
-}
+
+
 
 
